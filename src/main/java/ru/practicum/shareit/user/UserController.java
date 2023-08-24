@@ -44,14 +44,14 @@ public class UserController {
      * Обновление пользователя
      *
      * @param userId ID объекта, содержащий данные для обновления
-     * @param user Объект, содержащий данные для обновления
+     * @param user   Объект, содержащий данные для обновления
      * @return Обновленный пользователь
      */
     @PatchMapping("/{userId}")
     public User updateUser(@PathVariable Long userId,
                            @Validated({Update.class}) @RequestBody UserDto user,
                            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             throw new ValidationException("Проверьте введенные поля");
         }
         log.debug("Получен запрос PATCH /users/{userId}");

@@ -25,7 +25,7 @@ public class ItemController {
 
     @PostMapping
     public Item createItem(@RequestHeader("X-Sharer-User-Id") Long userId, @Validated({Create.class})
-                           @RequestBody ItemDto itemDto, BindingResult bindingResult) {
+    @RequestBody ItemDto itemDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationException("Ошибка ввода данных вещи");
         }

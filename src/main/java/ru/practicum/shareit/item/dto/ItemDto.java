@@ -17,8 +17,8 @@ import javax.validation.constraints.Size;
 public class ItemDto {
     @NotNull(groups = {Update.class})
     private long id;
-    @NotBlank(groups = {Create.class}, message = "Имя не может быть пустым" )
-    @Size(groups = {Create.class}, min = 2,max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов" )
+    @NotBlank(groups = {Create.class}, message = "Имя не может быть пустым")
+    @Size(groups = {Create.class}, min = 2, max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов")
     private String name;
     @NotBlank(groups = {Create.class}, message = "Описание не может быть пустым")
     @Size(groups = {Create.class}, max = 500)

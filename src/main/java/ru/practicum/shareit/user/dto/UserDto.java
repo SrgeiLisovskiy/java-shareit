@@ -15,10 +15,10 @@ import javax.validation.constraints.Size;
 public class UserDto {
     @NotNull(groups = {Update.class}, message = "ID не может быть пустым")
     private long id;
-    @Email(groups = {Create.class, Update.class},message = "Неверный Email")
+    @Email(groups = {Create.class, Update.class}, message = "Неверный Email")
     @NotBlank(groups = {Create.class}, message = "Email не может быть пустым")
     private String email;
-    @Size(groups ={Create.class, Update.class}, max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов" )
-    @NotBlank(groups ={Create.class}, message = "Имя не может быть пустым")
+    @Size(groups = {Create.class, Update.class}, max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов")
+    @NotBlank(groups = {Create.class}, message = "Имя не может быть пустым")
     private String name;
 }

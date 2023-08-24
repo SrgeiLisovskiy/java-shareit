@@ -18,7 +18,7 @@ public class User {
     @NotNull(message = "Email не может быть пустым")
     @Email(message = "Неверный Email")
     private String email;
-    @Size(max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов" )
+    @Size(max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов")
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
 }

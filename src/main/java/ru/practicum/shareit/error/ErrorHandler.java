@@ -16,31 +16,30 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserNotFoundException(NotFoundException e) {
-        log.debug("Получен статус 404 Not found {}",e.getMessage(),e);
+        log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
         return new ErrorResponse(404, "Объект не найден", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(ValidationException e) {
-        log.debug("Получен статус 400 Bad request {}",e.getMessage(),e);
+        log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
         return new ErrorResponse(400, "Ошибка введенных данных", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handelException(Exception e) {
-        log.debug("Получен статус 500 Internal server error {}",e.getMessage(),e);
+        log.debug("Получен статус 500 Internal server error {}", e.getMessage(), e);
         return new ErrorResponse(500, "Ошибка сервера", e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handelConflict(ConflictException e){
-        log.debug("Получен статус 409 Internal server error {}",e.getMessage(),e);
+    public ErrorResponse handelConflict(ConflictException e) {
+        log.debug("Получен статус 409 Internal server error {}", e.getMessage(), e);
         return new ErrorResponse(409, "Конфликт данных", e.getMessage());
     }
-
 
 
 }
