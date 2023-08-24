@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
 import java.util.ArrayList;
@@ -23,22 +24,22 @@ public class ItemServiceImpl implements ItemService {
     private long id;
 
     @Override
-    public Item createItem(Long userId, ItemDto itemDto) {
+    public ItemDto createItem(Long userId, ItemDto itemDto) {
         if (userService.getUserByID(userId) == null) {
             throw new NotFoundException("Пользователь не найден");
         }
         id++;
         Item item = ItemMapper.toItem(itemDto);
         item.setId(id);
-        item.setOwner(userService.getUserByID(userId));
+        item.setOwner(UserMapper.toUser(userService.getUserByID(userId)));
         item.setAvailable(Boolean.valueOf(itemDto.getAvailable()));
         items.put(id, item);
         log.info("Вещь добавлена: {}", item);
-        return item;
+        return ItemMapper.toItemDto(items.get(id));
     }
 
     @Override
-    public Item updateItem(Long userId, Long id, ItemDto itemDto) {
+    public ItemDto updateItem(Long userId, Long id, ItemDto itemDto) {
         if (items.get(id) == null) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -58,30 +59,30 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         log.info("Вещь обновлена: {}", item);
-        return items.get(id);
+        return ItemMapper.toItemDto(items.get(id));
     }
 
     @Override
-    public Item getItemByID(Long id) {
+    public ItemDto getItemByID(Long id) {
         if (items.get(id) == null) {
             throw new NotFoundException("Пользователь не найден");
         }
         log.info("Получение вещи с ID = {}: ", id);
-        return items.get(id);
+        return ItemMapper.toItemDto(items.get(id));
     }
 
     @Override
-    public List<Item> getAllItem(Long userId) {
+    public List<ItemDto> getAllItem(Long userId) {
         userService.getUserByID(userId);
         log.info("Список вещей получен");
         return items.values().stream()
-                .filter(item -> item.getOwner().getId() == userId)
+                .filter(item -> item.getOwner().getId() == userId).map(item -> ItemMapper.toItemDto(item))
                 .collect(Collectors.toList());
 
     }
 
     @Override
-    public List<Item> searchItems(String text) {
+    public List<ItemDto> searchItems(String text) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
@@ -89,7 +90,7 @@ public class ItemServiceImpl implements ItemService {
         return items.values().stream()
                 .filter(item -> item.getName().toLowerCase().contains(text) || item.getDescription()
                         .toLowerCase().contains(text))
-                .filter(item -> item.isAvailable())
+                .filter(item -> item.isAvailable()).map(item -> ItemMapper.toItemDto(item))
                 .collect(Collectors.toList());
     }
 

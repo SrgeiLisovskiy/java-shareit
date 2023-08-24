@@ -2,14 +2,11 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Create;
 import ru.practicum.shareit.Update;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
@@ -32,10 +29,7 @@ public class UserController {
      * @return Созданный пользователь
      */
     @PostMapping
-    public User createUser(@Validated({Create.class}) @RequestBody UserDto user, @NotNull BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationException("Проверьте введенные поля");
-        }
+    public UserDto createUser(@Validated({Create.class}) @RequestBody UserDto user) {
         log.debug("Получен запрос POST /users");
         return userService.createUser(user);
     }
@@ -48,12 +42,8 @@ public class UserController {
      * @return Обновленный пользователь
      */
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable Long userId,
-                           @Validated({Update.class}) @RequestBody UserDto user,
-                           BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new ValidationException("Проверьте введенные поля");
-        }
+    public UserDto updateUser(@PathVariable Long userId,
+                              @Validated({Update.class}) @RequestBody UserDto user) {
         log.debug("Получен запрос PATCH /users/{userId}");
         return userService.updateUser(userId, user);
     }
@@ -65,7 +55,7 @@ public class UserController {
      * @return Пользователь
      */
     @GetMapping("/{userId}")
-    public User getUserByID(@PathVariable Long userId) {
+    public UserDto getUserByID(@PathVariable Long userId) {
         log.debug("Получен запрос GET /users/{id}");
         return userService.getUserByID(userId);
     }
@@ -76,7 +66,7 @@ public class UserController {
      * @return Список пользователей
      */
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.debug("Получен запрос GET /users");
         return userService.getAllUsers();
     }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         for (String email : emails) {
             if (email.equals(userDto.getEmail())) {
                 throw new ConflictException("Пользователь с таким email уже существует");
@@ -32,11 +33,11 @@ public class UserServiceImpl implements UserService {
         user.setId(id);
         users.put(id, user);
         log.info("Пользователь добавлен: {}", user);
-        return users.get(id);
+        return UserMapper.toUserDto(users.get(id));
     }
 
     @Override
-    public User updateUser(Long id, UserDto userDto) {
+    public UserDto updateUser(Long id, UserDto userDto) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь не найден");
         }
@@ -56,22 +57,25 @@ public class UserServiceImpl implements UserService {
             users.get(id).setName(userDto.getName());
         }
         log.info("Пользователь обновлен: {}", users.get(id));
-        return users.get(id);
+        return UserMapper.toUserDto(users.get(id));
     }
 
     @Override
-    public User getUserByID(Long id) {
+    public UserDto getUserByID(Long id) {
         if (!users.containsKey(id)) {
             throw new NotFoundException("Пользователь не найден");
         }
         log.info("Пользователь с ID = {} :", id);
-        return users.get(id);
+        return UserMapper.toUserDto(users.get(id));
+
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Получен список пользователей");
-        return new ArrayList<>(users.values());
+        return users.values().stream()
+                .map(user -> UserMapper.toUserDto(user))
+                .collect(Collectors.toList());
     }
 
     @Override
