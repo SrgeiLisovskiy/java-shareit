@@ -1,5 +1,8 @@
 package ru.practicum.shareit.error;
 
+import lombok.Getter;
+
+@Getter
 public class ErrorResponse {
     private int status;
     private String error;
@@ -12,12 +15,9 @@ public class ErrorResponse {
         this.description = description;
     }
 
-    public String getError() {
-        return error;
+    public ErrorResponse(String error) {
+        this.error = error;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
 

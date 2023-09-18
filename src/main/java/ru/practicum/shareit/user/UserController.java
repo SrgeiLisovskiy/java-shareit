@@ -9,15 +9,15 @@ import ru.practicum.shareit.Create;
 import ru.practicum.shareit.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping(path = "/users")
+@Transactional
 public class UserController {
     @Autowired
     private final UserService userService;
@@ -28,6 +28,7 @@ public class UserController {
      * @param user Объект, содержащий данные для создания
      * @return Созданный пользователь
      */
+    @Transactional
     @PostMapping
     public UserDto createUser(@Validated({Create.class}) @RequestBody UserDto user) {
         log.debug("Получен запрос POST /users");

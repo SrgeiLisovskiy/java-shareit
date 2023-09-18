@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.StateValidationException;
+import ru.practicum.shareit.exception.ValidationException;
 
 @Slf4j
 @RestControllerAdvice
@@ -23,10 +25,22 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(MethodArgumentNotValidException e) {
+    public ErrorResponse handleMethodArgumentNotValidationException(MethodArgumentNotValidException e) {
         log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
         return new ErrorResponse(400, "Ошибка введенных данных", e.getMessage());
     }
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(ValidationException e) {
+        log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
+        return new ErrorResponse(400, "Ошибка введенных данных", e.getMessage());
+    }@ExceptionHandler(StateValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleStateValidationException(StateValidationException e) {
+        log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
