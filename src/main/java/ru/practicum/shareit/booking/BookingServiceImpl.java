@@ -75,8 +75,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new NotFoundException("Бронирование с ID = " + bookingId + " не найдено"));
         Item item = itemRepository.findById(booking.getItem().getId()).get();
-        Long ownerId = item.getOwner().getId();
-        if (ownerId == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             if (approved) {
                 if (booking.getStatus().equals(Status.APPROVED)) {
                     throw new ValidationException("Статус бронирования уже - Одобрен");
@@ -100,9 +99,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new NotFoundException("Бронтрование с ID = " + bookingId + "  не найдено"));
         Item item = itemRepository.getById(bookingRepository.getById(bookingId).getItem().getId());
-        Long bookerId = booking.getBooker().getId();
-        Long ownerId = item.getOwner().getId();
-        if (bookerId == userId || ownerId == userId) {
+        if (booking.getBooker().getId().equals(userId) || item.getOwner().getId().equals(userId)) {
             log.info("Получена информация по id ={} бронирования", bookingId);
             return BookingMapper.toBookingDto(bookingRepository.findById(bookingId).get());
         }
