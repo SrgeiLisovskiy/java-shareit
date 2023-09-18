@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
                     " быть ровна времени окончания бронирования");
         }
         bookingRepository.save(booking);
-        log.info("Добавлено бронирование",bookingDto);
+        log.info("Добавлено бронирование", bookingDto);
         return BookingMapper.toBookingDto(booking);
     }
 
@@ -75,7 +75,8 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new NotFoundException("Бронирование с ID = " + bookingId + " не найдено"));
         Item item = itemRepository.findById(booking.getItem().getId()).get();
-        if (item.getOwner().getId() == userId) {
+        Long ownerId = item.getOwner().getId();
+        if ( ownerId == userId) {
             if (approved) {
                 if (booking.getStatus().equals(Status.APPROVED)) {
                     throw new ValidationException("Статус бронирования уже - Одобрен");
@@ -99,8 +100,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new NotFoundException("Бронтрование с ID = " + bookingId + "  не найдено"));
         Item item = itemRepository.getById(bookingRepository.getById(bookingId).getItem().getId());
-        if (booking.getBooker().getId() == userId || item.getOwner().getId() == userId) {
-            log.info("Получена информация по id ={} бронирования",bookingId);
+        Long bookerId = booking.getBooker().getId();
+        Long ownerId = item.getOwner().getId();
+        if (bookerId == userId || ownerId == userId) {
+            log.info("Получена информация по id ={} бронирования", bookingId);
             return BookingMapper.toBookingDto(bookingRepository.findById(bookingId).get());
         }
         throw new NotFoundException("Пользователь с ID = " + userId + " не может внести изменения в бронирование");
@@ -117,15 +120,18 @@ public class BookingServiceImpl implements BookingService {
                 break;
             }
             case CURRENT: {
-                bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
                 break;
             }
             case PAST: {
-                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now());
                 break;
             }
             case FUTURE: {
-                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId,
+                        LocalDateTime.now());
                 break;
             }
             case WAITING: {
@@ -137,7 +143,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             }
         }
-        log.info("Получен список бронирования по id ={} пользователя",userId);
+        log.info("Получен список бронирования по id ={} пользователя", userId);
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
@@ -152,15 +158,18 @@ public class BookingServiceImpl implements BookingService {
                 break;
             }
             case CURRENT: {
-                bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), LocalDateTime.now());
                 break;
             }
             case PAST: {
-                bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now());
                 break;
             }
             case FUTURE: {
-                bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId,
+                        LocalDateTime.now());
                 break;
             }
             case WAITING: {
@@ -172,7 +181,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             }
         }
-        log.info("Получен список всех бронирований всех товаров по ID = {} пользователя",userId);
+        log.info("Получен список всех бронирований всех товаров по ID = {} пользователя", userId);
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }

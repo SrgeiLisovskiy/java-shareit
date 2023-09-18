@@ -10,11 +10,11 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.comment.CommentMapper;
 import ru.practicum.shareit.comment.CommentRepository;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Вещь с " + id + "  не найдена");
         }
         if (userService.getUserByID(userId) == null) {
-            new NotFoundException("Пользователь с " + id + "  не найдена");
+            throw new  NotFoundException("Пользователь с " + id + "  не найдена");
         }
         Item item = itemRepository.getById(id);
         if (itemDto.getName() != null) {
@@ -75,8 +75,10 @@ public class ItemServiceImpl implements ItemService {
                 new NotFoundException("Вещь с " + itemId + "  не найдена"));
         ItemDto itemDto = ItemMapper.toItemDto(item);
         if (item.getOwner().getId() == userId) {
-            Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(itemId, Status.APPROVED, LocalDateTime.now());
-            Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStartAsc(itemId, Status.APPROVED, LocalDateTime.now());
+            Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
+                    itemId, Status.APPROVED, LocalDateTime.now());
+            Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStartAsc(
+                    itemId, Status.APPROVED, LocalDateTime.now());
             if (lastBooking.isPresent()) {
                 itemDto.setLastBooking(BookingMapper.toBookingShortDto(lastBooking.get()));
             } else
@@ -86,14 +88,17 @@ public class ItemServiceImpl implements ItemService {
             } else
                 itemDto.setNextBooking(null);
         }
-        itemDto.setComments(commentRepository.findAllByItemId(itemId).stream().map(CommentMapper::toCommentDto).collect(Collectors.toSet()));
+        itemDto.setComments(commentRepository.findAllByItemId(itemId)
+                .stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toSet()));
         log.info("Получена вещь по ID = {}", itemId);
         return itemDto;
     }
 
     @Override
     public List<ItemDto> getAllItem(Long userId) {
-        log.info("Получен список всех вещей пользователя с ID = {}",userId);
+        log.info("Получен список всех вещей пользователя с ID = {}", userId);
         return itemRepository.findByOwnerId(userId).stream()
                 .map(item -> getItemByID(item.getId(), userId)).collect(Collectors.toList());
     }
@@ -115,8 +120,8 @@ public class ItemServiceImpl implements ItemService {
         User user = UserMapper.toUser(userService.getUserByID(userId));
         itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Вещь с " + itemId + "  не найдена"));
-        bookingRepository.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(itemId, userId, Status.APPROVED, LocalDateTime
-                .now()).orElseThrow(() -> new ValidationException("Вы не можете оставить отзыв " +
+        bookingRepository.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(itemId, userId, Status.APPROVED,
+                LocalDateTime.now()).orElseThrow(() -> new ValidationException("Вы не можете оставить отзыв " +
                 "на вешь с ID = " + itemId + ", так как вы не брали ее в аренду"));
         Comment comment = CommentMapper.toComment(commentDto, user, itemId);
         log.info("Пользователь с ID = {}, добавил коментарий {}, для вещи с ID ={}", userId, commentDto, itemId);
