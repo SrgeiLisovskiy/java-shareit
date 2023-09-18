@@ -13,7 +13,6 @@ import ru.practicum.shareit.exception.ValidationException;
 
 @Slf4j
 @RestControllerAdvice
-
 public class ErrorHandler {
 
     @ExceptionHandler
@@ -29,12 +28,15 @@ public class ErrorHandler {
         log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
         return new ErrorResponse(400, "Ошибка введенных данных", e.getMessage());
     }
+
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(ValidationException e) {
         log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
         return new ErrorResponse(400, "Ошибка введенных данных", e.getMessage());
-    }@ExceptionHandler(StateValidationException.class)
+    }
+
+    @ExceptionHandler(StateValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleStateValidationException(StateValidationException e) {
         log.debug("Получен статус 400 Bad request {}", e.getMessage(), e);
@@ -55,6 +57,5 @@ public class ErrorHandler {
         log.debug("Получен статус 409 Internal server error {}", e.getMessage(), e);
         return new ErrorResponse(409, "Конфликт данных", e.getMessage());
     }
-
 
 }

@@ -11,10 +11,10 @@ public enum State {
     REJECTED;
 
 
-    public static State returnState(String stateText){
+    public static State returnState(String stateText) {
         try {
             return State.valueOf(stateText);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new StateValidationException("Unknown state: " + stateText);
         }
     }
