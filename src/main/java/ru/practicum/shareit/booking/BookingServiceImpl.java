@@ -76,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
                 new NotFoundException("Бронирование с ID = " + bookingId + " не найдено"));
         Item item = itemRepository.findById(booking.getItem().getId()).get();
         Long ownerId = item.getOwner().getId();
-        if ( ownerId == userId) {
+        if (ownerId == userId) {
             if (approved) {
                 if (booking.getStatus().equals(Status.APPROVED)) {
                     throw new ValidationException("Статус бронирования уже - Одобрен");
