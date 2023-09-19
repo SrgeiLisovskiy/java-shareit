@@ -19,7 +19,6 @@ import java.util.List;
 @RequestMapping(path = "/users")
 @Transactional
 public class UserController {
-    @Autowired
     private final UserService userService;
 
     /**
@@ -28,7 +27,6 @@ public class UserController {
      * @param user Объект, содержащий данные для создания
      * @return Созданный пользователь
      */
-    @Transactional
     @PostMapping
     public UserDto createUser(@Validated({Create.class}) @RequestBody UserDto user) {
         log.debug("Получен запрос POST /users");

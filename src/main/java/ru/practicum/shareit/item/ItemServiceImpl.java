@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final ItemRepository itemRepository;
@@ -52,7 +51,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Вещь с " + id + "  не найдена");
         }
         if (userService.getUserByID(userId) == null) {
-            throw new  NotFoundException("Пользователь с " + id + "  не найдена");
+            throw new NotFoundException("Пользователь с " + id + "  не найдена");
         }
         Item item = itemRepository.getById(id);
         if (itemDto.getName() != null) {
@@ -74,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Вещь с " + itemId + "  не найдена"));
         ItemDto itemDto = ItemMapper.toItemDto(item);
-        if (item.getOwner().getId().equals(userId)) {
+        if (item.getOwner().getId() == userId) {
             Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
                     itemId, Status.APPROVED, LocalDateTime.now());
             Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStartAsc(
