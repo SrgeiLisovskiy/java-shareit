@@ -8,7 +8,6 @@ import ru.practicum.shareit.Create;
 import ru.practicum.shareit.Update;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 
@@ -16,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping(path = "/users")
-@Transactional
 public class UserController {
     private final UserService userService;
 
