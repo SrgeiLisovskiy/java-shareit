@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 

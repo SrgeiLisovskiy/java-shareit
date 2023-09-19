@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
