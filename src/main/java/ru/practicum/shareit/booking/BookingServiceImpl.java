@@ -151,7 +151,7 @@ public class BookingServiceImpl implements BookingService {
         userService.getUserByID(userId);
         State state = State.returnState(stateText);
         Page<Booking> bookings = null;
-        PageRequest pageRequest = checkPageSize(from,size);
+        PageRequest pageRequest = checkPageSize(from, size);
         switch (state) {
             case ALL: {
                 bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest);
@@ -184,7 +184,8 @@ public class BookingServiceImpl implements BookingService {
         log.info("Получен список всех бронирований всех товаров по ID = {} пользователя", userId);
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
-    private  PageRequest checkPageSize(Integer from, Integer size) {
+
+    private PageRequest checkPageSize(Integer from, Integer size) {
         if (from == 0 && size == 0) {
             throw new ValidationException("размер и номер страницы не может быть равен нулю ");
         }

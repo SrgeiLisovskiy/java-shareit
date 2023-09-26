@@ -20,24 +20,26 @@ public class ItemRequestController {
     public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                      @Validated @RequestBody ItemRequestDto itemRequestDto) {
         log.debug("Получен запрос: POST /requests");
-        return itemRequestService.addRequest(userId,itemRequestDto);
+        return itemRequestService.addRequest(userId, itemRequestDto);
     }
+
     @GetMapping
-    public List<ItemRequestDto> getRequestsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId){
+    public List<ItemRequestDto> getRequestsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.debug("Получен запрос: GET /requests");
         return itemRequestService.getRequestsByUserId(userId);
     }
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @PathVariable("requestId") Long requestId){
+                                     @PathVariable("requestId") Long requestId) {
         log.debug("Получен запрос: GET /requests/{requestId}");
         return itemRequestService.getRequest(userId, requestId);
     }
+
     @GetMapping("/all")
     public List<ItemRequestDto> getRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @RequestParam(defaultValue = "0", required = false) Integer from,
-                                            @RequestParam(defaultValue = "10",required = false) Integer size){
+                                            @RequestParam(defaultValue = "10", required = false) Integer size) {
         log.debug("Получен запрос: GET /requests/all");
         return itemRequestService.getRequests(userId, from, size);
     }

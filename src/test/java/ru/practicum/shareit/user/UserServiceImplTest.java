@@ -4,19 +4,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,8 +27,9 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     private User user1;
     private User user2;
+
     @BeforeEach
-void beforeEach(){
+    void beforeEach() {
         user1 = User.builder()
                 .id(1L)
                 .email("email@email.ru")
@@ -43,13 +42,14 @@ void beforeEach(){
                 .name("user2")
                 .build();
     }
+
     @Test
     @DisplayName("Проверка createUser в UserServiceImpl")
     void createUser() {
         when(userRepository.save(any(User.class))).thenReturn(user1);
         UserDto userDtoTest = userService.createUser(UserMapper.toUserDto(user1));
-        assertEquals(1L,userDtoTest.getId());
-        assertEquals("email@email.ru",userDtoTest.getEmail());
+        assertEquals(1L, userDtoTest.getId());
+        assertEquals("email@email.ru", userDtoTest.getEmail());
         assertEquals("user1", userDtoTest.getName());
 
         verify(userRepository, times(1)).save(user1);
@@ -68,9 +68,9 @@ void beforeEach(){
                 .name("userUpdate")
                 .build();
 
-        UserDto userDtoUpdate =  userService.updateUser(1L, userDto1);
+        UserDto userDtoUpdate = userService.updateUser(1L, userDto1);
 
-        assertEquals(userDtoUpdate.getEmail(),userDto1.getEmail());
+        assertEquals(userDtoUpdate.getEmail(), userDto1.getEmail());
         assertEquals(userDtoUpdate.getName(), userDto1.getName());
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).save(UserMapper.toUser(userDto1));
@@ -85,7 +85,7 @@ void beforeEach(){
         UserDto userDtoTest = userService.getUserByID(1L);
 
         assertEquals(1L, userDtoTest.getId());
-        assertEquals("email@email.ru",userDtoTest.getEmail());
+        assertEquals("email@email.ru", userDtoTest.getEmail());
         assertEquals("user1", userDtoTest.getName());
     }
 
@@ -113,9 +113,10 @@ void beforeEach(){
 
         verify(userRepository, times(1)).deleteById(1L);
     }
+
     @Test
     @DisplayName("Проверка на добовление нового пользователя с существующим email")
-    void checkUserEmailForDuplicateTest(){
+    void checkUserEmailForDuplicateTest() {
         when(userRepository.save(any(User.class))).thenThrow(new ConflictException("Пользователь с "
                 + user1.getEmail() + " уже существует"));
 
@@ -127,7 +128,7 @@ void beforeEach(){
 
     @Test
     @DisplayName("Проверка на несуществующего пользователя")
-    void checkNotExistsUserByIdTest(){
+    void checkNotExistsUserByIdTest() {
         when(userRepository.findById(anyLong())).thenThrow(new NotFoundException("Пользователь с ID = 2 не найден"));
 
         final NotFoundException exception = Assertions.assertThrows(NotFoundException.class,

@@ -10,15 +10,16 @@ import java.util.ArrayList;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemRequestMapper {
-    public static ItemRequest toItemRequest(User user, ItemRequestDto itemRequestDto){
-       return ItemRequest.builder()
+    public static ItemRequest toItemRequest(User user, ItemRequestDto itemRequestDto) {
+        return ItemRequest.builder()
                 .id(itemRequestDto.getId())
                 .requester(user)
                 .description(itemRequestDto.getDescription())
                 .created(LocalDateTime.now())
                 .build();
     }
-    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest){
+
+    public static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
