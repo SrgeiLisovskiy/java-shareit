@@ -18,7 +18,7 @@ public class UserDto {
     @Email(groups = {Create.class, Update.class}, message = "Неверный Email")
     @NotBlank(groups = {Create.class}, message = "Email не может быть пустым")
     private String email;
-    @Size(groups = {Create.class, Update.class}, max = 30, message = "Имя должно быть не меньше 2 и не больше 30 символов")
+    @Size(groups = {Create.class, Update.class}, max = 50, message = "Имя должно быть не меньше 2 и не больше 30 символов")
     @NotBlank(groups = {Create.class}, message = "Имя не может быть пустым")
     private String name;
 }

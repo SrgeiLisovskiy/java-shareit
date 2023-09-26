@@ -5,17 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.Create;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ItemController {
     private final ItemService itemService;
 
@@ -35,8 +35,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemByID(@PathVariable Long itemId) {
-        return itemService.getItemByID(itemId);
+    public ItemDto getItemByID(@RequestHeader("X-Sharer-User-Id") Long userId,
+                               @PathVariable Long itemId) {
+        return itemService.getItemByID(itemId, userId);
     }
 
     @GetMapping
@@ -49,5 +50,14 @@ public class ItemController {
     public List<ItemDto> searchItems(@RequestParam String text) {
         log.debug("Получен запрос: GET /items/search?text={text}");
         return itemService.searchItems(text.toLowerCase());
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long itemId,
+                                 @RequestBody @Validated CommentDto commentDto) {
+
+        log.debug("Получен запрос: POST /items/{itemId}/comment");
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }

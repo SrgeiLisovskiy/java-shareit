@@ -6,14 +6,12 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
+
 @Data
 @Builder
 public class ItemRequestDto {
     private long id;
     private String description;
-    private User requestor;
+    private User requester;
     private LocalDateTime created;
 }
