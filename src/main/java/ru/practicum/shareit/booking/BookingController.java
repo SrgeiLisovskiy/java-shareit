@@ -43,16 +43,20 @@ public class BookingController {
 
     @GetMapping
     public List<BookingReturnDto> getBookingsByUserId(@RequestParam(defaultValue = "ALL") String state,
-                                                      @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                      @RequestHeader("X-Sharer-User-Id") Long userId,
+                                                      @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                      @RequestParam(defaultValue = "10", required = false) Integer size) {
         log.info("Получен запрос на поиск бронирования по id пользователя");
-        return bookingService.getBookingsByBookerId(userId, state);
+        return bookingService.getBookingsByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                                     @RequestParam(defaultValue = "ALL") String state) {
+                                                                     @RequestParam(defaultValue = "ALL") String state,
+                                                                     @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                                     @RequestParam(defaultValue = "10", required = false) Integer size) {
         log.info("Получен запрос на поиск всех бронирований всех товаров по ID пользователя");
-        return bookingService.getAllBookingsForAllItemsByOwnerId(userId, state);
+        return bookingService.getAllBookingsForAllItemsByOwnerId(userId, state,from, size);
     }
 
 }

@@ -12,8 +12,8 @@ interface BookingService {
 
     BookingReturnDto getBookingById(Long userId, Long bookingId);
 
-    List<BookingReturnDto> getBookingsByBookerId(Long userId, String stateText);
+    List<BookingReturnDto> getBookingsByBookerId(Long userId, String stateText, Integer from, Integer size);
 
-    List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(Long userId, String stateText);
+    List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(Long userId, String stateText, Integer from, Integer size);
 
 }

@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -106,36 +108,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReturnDto> getBookingsByBookerId(Long userId, String stateText) {
+    public List<BookingReturnDto> getBookingsByBookerId(Long userId, String stateText, Integer from, Integer size) {
         userService.getUserByID(userId);
         State state = State.returnState(stateText);
-        List<Booking> bookings = bookingRepository.findAll();
+        Page<Booking> bookings = null;
+        PageRequest pageRequest = checkPageSize(from, size);
         switch (state) {
             case ALL: {
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageRequest);
                 break;
             }
             case CURRENT: {
                 bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             }
             case PAST: {
                 bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
                 break;
             }
             case FUTURE: {
                 bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
                 break;
             }
             case WAITING: {
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING, pageRequest);
                 break;
             }
             case REJECTED: {
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageRequest);
                 break;
             }
         }
@@ -144,40 +147,54 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(Long userId, String stateText) {
+    public List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(Long userId, String stateText, Integer from, Integer size) {
         userService.getUserByID(userId);
         State state = State.returnState(stateText);
-        List<Booking> bookings = bookingRepository.findAll();
+        Page<Booking> bookings = null;
+        PageRequest pageRequest = checkPageSize(from,size);
         switch (state) {
             case ALL: {
-                bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest);
                 break;
             }
             case CURRENT: {
                 bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now());
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest);
                 break;
             }
             case PAST: {
                 bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
                 break;
             }
             case FUTURE: {
                 bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId,
-                        LocalDateTime.now());
+                        LocalDateTime.now(), pageRequest);
                 break;
             }
             case WAITING: {
-                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING, pageRequest);
                 break;
             }
             case REJECTED: {
-                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageRequest);
                 break;
             }
         }
         log.info("Получен список всех бронирований всех товаров по ID = {} пользователя", userId);
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+    }
+    private  PageRequest checkPageSize(Integer from, Integer size) {
+        if (from == 0 && size == 0) {
+            throw new ValidationException("размер и номер страницы не может быть равен нулю ");
+        }
+        if (size < 0) {
+            throw new ValidationException("размер не может быть меньше чем 0");
+        }
+
+        if (from < 0) {
+            throw new ValidationException("страница не может быть меньше чем 0");
+        }
+        return PageRequest.of(from / size, size);
     }
 }

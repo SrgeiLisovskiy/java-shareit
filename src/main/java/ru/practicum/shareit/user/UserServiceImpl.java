@@ -42,13 +42,13 @@ public class UserServiceImpl implements UserService {
             user.setName(userDto.getName());
         }
         userRepository.save(user);
-        return UserMapper.toUserDto(UserMapper.toUser(getUserByID(id)));
+        return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto getUserByID(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Пользователь с " + id + "  не найден"));
+                new NotFoundException("Пользователь с ID = " + id + "  не найден"));
         return UserMapper.toUserDto(user);
     }
 

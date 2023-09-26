@@ -23,6 +23,7 @@ public class CommentMapper {
 
     public static Comment toComment(CommentDto commentDto, User user, Long itemId) {
         return Comment.builder()
+                .id(commentDto.getId())
                 .itemId(itemId)
                 .author(user)
                 .text(commentDto.getText())
