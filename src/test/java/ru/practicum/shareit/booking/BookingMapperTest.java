@@ -22,6 +22,7 @@ class BookingMapperTest {
 
 
     private BookingDto bookingDto;
+    private BookingDto bookingDto2;
 
     private Booking booking;
 
@@ -47,6 +48,12 @@ class BookingMapperTest {
                 .start(LocalDateTime.of(2023, 9, 28, 1, 1))
                 .end(LocalDateTime.of(2023, 9, 30, 1, 1))
                 .build();
+        bookingDto2 = BookingDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.of(2023, 9, 28, 1, 1))
+                .end(LocalDateTime.of(2023, 9, 30, 1, 1))
+                .status(Status.REJECTED)
+                .build();
 
         booking = Booking.builder()
                 .id(1L)
@@ -61,14 +68,26 @@ class BookingMapperTest {
 
 
     @Test
-    @DisplayName("Проверка toBooking в BookingMapperTest")
-    void toBooking() {
+    @DisplayName("Проверка toBooking с статусом null в BookingMapperTest")
+    void toBookingStatusNull() {
         Booking bookingTest = BookingMapper.toBooking(bookingDto);
 
         assertEquals(bookingDto.getId(), bookingTest.getId());
         assertEquals(bookingDto.getStart(), bookingTest.getStart());
         assertEquals(bookingDto.getEnd(), bookingTest.getEnd());
         assertEquals(bookingTest.getStatus(), Status.WAITING);
+
+    }
+
+    @Test
+    @DisplayName("Проверка toBooking в BookingMapperTest")
+    void toBooking() {
+        Booking bookingTest = BookingMapper.toBooking(bookingDto2);
+
+        assertEquals(bookingDto.getId(), bookingTest.getId());
+        assertEquals(bookingDto.getStart(), bookingTest.getStart());
+        assertEquals(bookingDto.getEnd(), bookingTest.getEnd());
+        assertEquals(bookingTest.getStatus(), Status.REJECTED);
 
     }
 

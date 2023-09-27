@@ -74,6 +74,23 @@ class UserServiceImplTest {
         assertEquals(userDtoUpdate.getName(), userDto1.getName());
         verify(userRepository, times(1)).findById(1L);
         verify(userRepository, times(1)).save(UserMapper.toUser(userDto1));
+
+
+    }
+
+    @Test
+    void updateUserNotById() {
+        when(userRepository.findById(anyLong())).thenThrow(new NotFoundException("Пользователь  не найден"));
+        UserDto userDto1 = UserDto.builder()
+                .id(1L)
+                .email("update@mail.ru")
+                .name("userUpdate")
+                .build();
+
+        final NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
+                () -> userService.updateUser(5L, userDto1));
+
+        assertEquals("Пользователь  не найден", exception.getMessage());
     }
 
     @Test
@@ -87,6 +104,8 @@ class UserServiceImplTest {
         assertEquals(1L, userDtoTest.getId());
         assertEquals("email@email.ru", userDtoTest.getEmail());
         assertEquals("user1", userDtoTest.getName());
+
+        verify(userRepository, times(1)).findById(user1.getId());
     }
 
     @Test

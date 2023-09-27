@@ -165,8 +165,36 @@ public class BookingServiceImplTest {
 
         bookingDto.setEnd(LocalDateTime.of(2020, 10, 11, 1, 1));
         assertThrows(ValidationException.class, () -> bookingService.createBooking(anyLong(), bookingDto));
-
     }
+
+    @Test
+    void createBookingErrorItemById() {
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user2));
+
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(anyLong(), bookingDto));
+    }
+
+    @Test
+    void createBookingErrorUserByIdEqualsOwnerId() {
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user2));
+        when(itemService.getItemByID(anyLong(), anyLong())).thenReturn(itemDto);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(bookingRepository.save(any(Booking.class))).thenReturn(nextBooking);
+        item.setOwner(user2);
+
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(anyLong(), bookingDto));
+    }
+
+    @Test
+    void createBookingErrorUserById() {
+        when(itemService.getItemByID(anyLong(), anyLong())).thenReturn(itemDto);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(bookingRepository.save(any(Booking.class))).thenReturn(nextBooking);
+
+        bookingDto.setEnd(LocalDateTime.of(2020, 10, 11, 1, 1));
+        assertThrows(NotFoundException.class, () -> bookingService.createBooking(anyLong(), bookingDto));
+    }
+
 
     @Test
     @DisplayName("Проверка updateBooking в BookingServiceImpl")
@@ -199,7 +227,6 @@ public class BookingServiceImplTest {
 
     @Test
     void approveBookingErrorUser() {
-        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(lastBooking));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item));
         when(bookingRepository.save(any(Booking.class))).thenReturn(lastBooking);
 
@@ -220,14 +247,6 @@ public class BookingServiceImplTest {
         assertEquals(bookingDtoTest.getItem(), item);
         assertEquals(bookingDtoTest.getStatus(), lastBooking.getStatus());
         assertEquals(bookingDtoTest.getBooker(), user);
-    }
-
-    @Test
-    void getBookingByIdError() {
-        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(1L, lastBooking.getId()));
     }
 
     @Test

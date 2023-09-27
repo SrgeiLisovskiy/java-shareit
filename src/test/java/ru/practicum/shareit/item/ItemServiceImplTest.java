@@ -15,12 +15,14 @@ import ru.practicum.shareit.comment.CommentMapper;
 import ru.practicum.shareit.comment.CommentRepository;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.model.Comment;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,6 +40,9 @@ class ItemServiceImplTest {
 
     @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private UserService userService;
 
     @MockBean
     private ItemRepository itemRepository;
@@ -110,7 +115,7 @@ class ItemServiceImplTest {
     @DisplayName("Проверка createItem в ItemServiceImpl")
     void createItem() {
         when(itemRepository.save(any(Item.class))).thenReturn(item);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
 
         ItemDto itemDto = itemService.createItem(anyLong(), ItemMapper.toItemDto(item));
         assertEquals(1, itemDto.getId());
@@ -123,10 +128,11 @@ class ItemServiceImplTest {
         verify(itemRepository, times(1)).save(any(Item.class));
     }
 
+
     @Test
     @DisplayName("Проверка updateItem в ItemServiceImpl")
     void updateItem() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
         when(itemRepository.getById(anyLong())).thenReturn(item);
         when(itemRepository.save(any(Item.class))).thenReturn(item);
         ItemDto itemDto = ItemDto.builder()
@@ -143,6 +149,23 @@ class ItemServiceImplTest {
         assertEquals(false, itemDtoTest.getAvailable());
 
         verify(itemRepository, times(1)).save(any(Item.class));
+    }
+
+    @Test
+    void updateItemErrorId() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        assertThrows(NotFoundException.class, () -> itemService.updateItem(1L, 1L, ItemMapper.toItemDto(item)));
+    }
+
+    @Test
+    void updateItemErrorUserId() {
+        when(userService.getUserByID(anyLong())).thenReturn(null);
+        when(itemRepository.getById(anyLong())).thenReturn(item);
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        assertThrows(NotFoundException.class, () -> itemService.updateItem(1L, 1L, ItemMapper.toItemDto(item)));
     }
 
     @Test
@@ -220,7 +243,7 @@ class ItemServiceImplTest {
     @Test
     @DisplayName("Проверка addComment в ItemServiceImpl")
     void addComment() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item));
         when(bookingRepository.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(
                 anyLong(), anyLong(), any(Status.class), any(LocalDateTime.class)))
@@ -228,19 +251,22 @@ class ItemServiceImplTest {
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
         CommentDto commentDto = itemService.addComment(user.getId(), item.getId(), CommentMapper.toCommentDto(comment));
+        assertEquals(comment.getId(), commentDto.getId());
+        assertEquals(comment.getText(), commentDto.getText());
+        assertEquals(comment.getItemId(), commentDto.getItemId());
+        assertEquals(comment.getAuthor(), user);
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
     void addCommentUserNotBookingItem() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.ofNullable(item));
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
         when(bookingRepository.findFirstByItemIdAndBookerIdAndStatusAndEndBefore(
                 anyLong(), anyLong(), any(Status.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
-        assertThrows(ValidationException.class, () ->
+        assertThrows(NotFoundException.class, () ->
                 itemService.addComment(user.getId(), item.getId(), CommentMapper.toCommentDto(comment)));
     }
 }
