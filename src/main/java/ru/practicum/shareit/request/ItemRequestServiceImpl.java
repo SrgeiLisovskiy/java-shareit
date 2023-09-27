@@ -70,7 +70,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestDto;
     }
 
-    private PageRequest checkPageSize(Integer from, Integer size) {
+    public PageRequest checkPageSize(Integer from, Integer size) {
         if (from == 0 && size == 0) {
             throw new ValidationException("размер и номер страницы не может быть равен нулю ");
         }
