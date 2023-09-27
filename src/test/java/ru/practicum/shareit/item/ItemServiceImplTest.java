@@ -190,6 +190,19 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void getItemByIdErrorItemId() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(user));
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartBeforeOrderByStartDesc(
+                item.getId(), Status.APPROVED, LocalDateTime.now())).thenReturn(Optional.ofNullable(lastBooking));
+        when(bookingRepository.findFirstByItemIdAndStatusAndStartAfterOrderByStartAsc(
+                item.getId(), Status.APPROVED, LocalDateTime.now())).thenReturn(Optional.ofNullable(nextBooking));
+        when(commentRepository.findAllByItemId(anyLong())).thenReturn(Set.of(comment));
+
+        assertThrows(NotFoundException.class, () -> itemService.getItemByID(1L, 1L));
+    }
+
+
+    @Test
     @DisplayName("Проверка getAllItem в ItemServiceImpl")
     void getAllItem() {
         when(itemRepository.findByOwnerId(anyLong(), any(PageRequest.class)))

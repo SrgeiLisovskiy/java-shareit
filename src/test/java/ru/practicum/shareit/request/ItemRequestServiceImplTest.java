@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -143,5 +145,13 @@ class ItemRequestServiceImplTest {
 
         verify(itemRequestRepository, times(1))
                 .findByRequesterIdNotOrderByCreatedAsc(anyLong(), any(PageRequest.class));
+    }
+
+    @Test
+    void getRequestErrorRequestId() {
+        when(userService.getUserByID(anyLong())).thenReturn(userDto);
+
+        assertThrows(NotFoundException.class, () -> itemRequestService.getRequest(1L, 1L));
+
     }
 }
