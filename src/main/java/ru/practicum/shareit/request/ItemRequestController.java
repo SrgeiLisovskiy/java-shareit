@@ -8,6 +8,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.util.List;
 
+import static ru.practicum.shareit.utilite.Constant.HEADER_USER_ID;
+
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -17,29 +19,29 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @PostMapping
-    public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDto addRequest(@RequestHeader(HEADER_USER_ID) Long userId,
                                      @Validated @RequestBody ItemRequestDto itemRequestDto) {
         log.debug("Получен запрос: POST /requests");
         return itemRequestService.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping
-    public List<ItemRequestDto> getRequestsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> getRequestsByUserId(@RequestHeader(HEADER_USER_ID) Long userId) {
         log.debug("Получен запрос: GET /requests");
         return itemRequestService.getRequestsByUserId(userId);
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDto getRequest(@RequestHeader(HEADER_USER_ID) Long userId,
                                      @PathVariable("requestId") Long requestId) {
         log.debug("Получен запрос: GET /requests/{requestId}");
         return itemRequestService.getRequest(userId, requestId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestParam(defaultValue = "0", required = false) Integer from,
-                                            @RequestParam(defaultValue = "10", required = false) Integer size) {
+    public List<ItemRequestDto> getRequests(@RequestHeader(HEADER_USER_ID) Long userId,
+                                            @RequestParam(defaultValue = "0") Integer from,
+                                            @RequestParam(defaultValue = "10") Integer size) {
         log.debug("Получен запрос: GET /requests/all");
         return itemRequestService.getRequests(userId, from, size);
     }

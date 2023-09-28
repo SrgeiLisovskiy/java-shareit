@@ -3,10 +3,9 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -14,6 +13,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utilite.CheckValidationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +25,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserService userService;
     private final ItemRequestRepository itemRequestRepository;
     private final ItemRepository itemRepository;
+    private final CheckValidationService checkValidation;
 
     @Override
+    @Transactional
     public ItemRequestDto addRequest(Long userId, ItemRequestDto itemRequestDto) {
         User user = UserMapper.toUser(userService.getUserByID(userId));
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(user, itemRequestDto);
@@ -56,7 +58,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getRequests(Long requesterId, Integer from, Integer size) {
         userService.getUserByID(requesterId);
         Page<ItemRequest> itemRequests = itemRequestRepository
-                .findByRequesterIdNotOrderByCreatedAsc(requesterId, checkPageSize(from, size));
+                .findByRequesterIdNotOrderByCreatedAsc(requesterId, checkValidation.checkPageSize(from, size));
         log.info("Получен список запросов по ID ={} запрашивающего с параметрами : страницы = {}, размер ={} ",
                 requesterId, from, size);
         return itemRequests.stream().map(this::addItemsToRequest).collect(Collectors.toList());
@@ -70,17 +72,4 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return itemRequestDto;
     }
 
-    public PageRequest checkPageSize(Integer from, Integer size) {
-        if (from == 0 && size == 0) {
-            throw new ValidationException("размер и номер страницы не может быть равен нулю ");
-        }
-        if (size < 0) {
-            throw new ValidationException("размер не может быть меньше чем 0");
-        }
-
-        if (from < 0) {
-            throw new ValidationException("страница не может быть меньше чем 0");
-        }
-        return PageRequest.of(from / size, size);
-    }
 }

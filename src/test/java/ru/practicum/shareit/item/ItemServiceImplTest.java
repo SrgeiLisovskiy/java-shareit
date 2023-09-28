@@ -18,7 +18,6 @@ import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserRepository;
@@ -55,7 +54,6 @@ class ItemServiceImplTest {
 
     private User user;
     private Item item;
-    private ItemRequest itemRequest;
     private Comment comment;
     private Booking nextBooking;
     private Booking lastBooking;
@@ -68,12 +66,6 @@ class ItemServiceImplTest {
                 .email("user@mail.ru")
                 .build();
 
-        itemRequest = ItemRequest.builder()
-                .id(1L)
-                .description("ItemRequestTest")
-                .requester(user)
-                .created(LocalDateTime.now())
-                .build();
 
         item = Item.builder()
                 .id(1L)

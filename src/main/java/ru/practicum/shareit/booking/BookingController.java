@@ -9,6 +9,8 @@ import ru.practicum.shareit.booking.dto.BookingReturnDto;
 
 import java.util.List;
 
+import static ru.practicum.shareit.utilite.Constant.HEADER_USER_ID;
+
 
 @Slf4j
 @RestController
@@ -18,7 +20,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingReturnDto addBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingReturnDto addBooking(@RequestHeader(HEADER_USER_ID) Long userId,
                                        @Validated @RequestBody BookingDto bookingDto) {
         log.debug("Получен запрос на добавление бронирования");
         return bookingService.createBooking(userId, bookingDto);
@@ -26,7 +28,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingReturnDto updateBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingReturnDto updateBooking(@RequestHeader(HEADER_USER_ID) Long userId,
                                           @PathVariable Long bookingId,
                                           @RequestParam boolean approved) {
         log.info("Получен запрос на подтверждение бронирования");
@@ -34,7 +36,7 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingReturnDto getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public BookingReturnDto getBooking(@RequestHeader(HEADER_USER_ID) Long userId,
                                        @PathVariable Long bookingId) {
         log.info("Получен запрос на поиск информации по id бронирования");
         return bookingService.getBookingById(userId, bookingId);
@@ -43,18 +45,18 @@ public class BookingController {
 
     @GetMapping
     public List<BookingReturnDto> getBookingsByUserId(@RequestParam(defaultValue = "ALL") String state,
-                                                      @RequestHeader("X-Sharer-User-Id") Long userId,
-                                                      @RequestParam(defaultValue = "0", required = false) Integer from,
-                                                      @RequestParam(defaultValue = "10", required = false) Integer size) {
+                                                      @RequestHeader(HEADER_USER_ID) Long userId,
+                                                      @RequestParam(defaultValue = "0") Integer from,
+                                                      @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос на поиск бронирования по id пользователя");
         return bookingService.getBookingsByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingReturnDto> getAllBookingsForAllItemsByOwnerId(@RequestHeader(HEADER_USER_ID) Long userId,
                                                                      @RequestParam(defaultValue = "ALL") String state,
-                                                                     @RequestParam(defaultValue = "0", required = false) Integer from,
-                                                                     @RequestParam(defaultValue = "10", required = false) Integer size) {
+                                                                     @RequestParam(defaultValue = "0") Integer from,
+                                                                     @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен запрос на поиск всех бронирований всех товаров по ID пользователя");
         return bookingService.getAllBookingsForAllItemsByOwnerId(userId, state,from, size);
     }

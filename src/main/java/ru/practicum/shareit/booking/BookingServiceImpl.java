@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utilite.CheckValidationService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
     private final ItemService itemService;
     private final ItemRepository itemRepository;
+    private final CheckValidationService checkValidation;
 
     @Override
     @Transactional
@@ -112,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
         userService.getUserByID(userId);
         State state = State.returnState(stateText);
         Page<Booking> bookings = null;
-        PageRequest pageRequest = checkPageSize(from, size);
+        PageRequest pageRequest = checkValidation.checkPageSize(from, size);
         switch (state) {
             case ALL: {
                 bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId, pageRequest);
@@ -151,7 +153,7 @@ public class BookingServiceImpl implements BookingService {
         userService.getUserByID(userId);
         State state = State.returnState(stateText);
         Page<Booking> bookings = null;
-        PageRequest pageRequest = checkPageSize(from, size);
+        PageRequest pageRequest = checkValidation.checkPageSize(from, size);
         switch (state) {
             case ALL: {
                 bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest);
@@ -185,17 +187,4 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
-    private PageRequest checkPageSize(Integer from, Integer size) {
-        if (from == 0 && size == 0) {
-            throw new ValidationException("размер и номер страницы не может быть равен нулю ");
-        }
-        if (size < 0) {
-            throw new ValidationException("размер не может быть меньше чем 0");
-        }
-
-        if (from < 0) {
-            throw new ValidationException("страница не может быть меньше чем 0");
-        }
-        return PageRequest.of(from / size, size);
-    }
 }

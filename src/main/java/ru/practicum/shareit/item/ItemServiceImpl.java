@@ -20,6 +20,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utilite.CheckValidationService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final CheckValidationService checkValidation;
 
     @Override
     @Transactional
@@ -109,8 +111,9 @@ public class ItemServiceImpl implements ItemService {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
+        PageRequest pageRequest = checkValidation.checkPageSize(from, size);
         log.info("Получен список вещей подходящие под запрос поиска : {}", text);
-        return itemRepository.search(text, checkPageSize(from, size)).stream()
+        return itemRepository.search(text, pageRequest).stream()
                 .map(item -> ItemMapper.toItemDto(item)).collect(Collectors.toList());
     }
 
@@ -126,20 +129,6 @@ public class ItemServiceImpl implements ItemService {
         Comment comment = CommentMapper.toComment(commentDto, user, itemId);
         log.info("Пользователь с ID = {}, добавил коментарий {}, для вещи с ID ={}", userId, commentDto, itemId);
         return CommentMapper.toCommentDto(commentRepository.save(comment));
-    }
-
-    private PageRequest checkPageSize(Integer from, Integer size) {
-        if (from == 0 && size == 0) {
-            throw new ValidationException("размер и номер страницы не может быть равен нулю ");
-        }
-        if (size <= 0) {
-            throw new ValidationException("размер не может быть меньше чем 0");
-        }
-
-        if (from < 0) {
-            throw new ValidationException("страница не может быть меньше чем 0");
-        }
-        return PageRequest.of(from / size, size);
     }
 
 }

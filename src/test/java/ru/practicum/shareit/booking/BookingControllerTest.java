@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.practicum.shareit.utilite.Constant.HEADER_USER_ID;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
@@ -58,21 +59,21 @@ class BookingControllerTest {
         item = Item.builder()
                 .requestId(1L)
                 .name("Item")
-                .description("itemTest")
+                .description("item Test")
                 .available(true)
                 .owner(user)
                 .build();
 
         bookingDto = BookingDto.builder()
                 .itemId(1L)
-                .start(LocalDateTime.of(2023, 9, 28, 1, 1))
-                .end(LocalDateTime.of(2023, 9, 30, 1, 1))
+                .start(LocalDateTime.of(2023, 10, 28, 1, 1))
+                .end(LocalDateTime.of(2023, 10, 30, 1, 1))
                 .build();
 
         nextBookingDto = BookingReturnDto.builder()
                 .id(1L)
-                .start(LocalDateTime.of(2023, 9, 28, 1, 1))
-                .end(LocalDateTime.of(2023, 9, 30, 1, 1))
+                .start(LocalDateTime.of(2023, 10, 28, 1, 1))
+                .end(LocalDateTime.of(2023, 10, 30, 1, 1))
                 .item(item)
                 .booker(user)
                 .status(Status.APPROVED)
@@ -80,8 +81,8 @@ class BookingControllerTest {
 
         lastBookingDto = BookingReturnDto.builder()
                 .id(2L)
-                .start(LocalDateTime.of(2023, 9, 28, 1, 1))
-                .end(LocalDateTime.of(2023, 9, 30, 1, 1))
+                .start(LocalDateTime.of(2023, 10, 28, 1, 1))
+                .end(LocalDateTime.of(2023, 10, 30, 1, 1))
                 .item(item)
                 .booker(user)
                 .status(Status.APPROVED)
@@ -99,7 +100,7 @@ class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER_USER_ID, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(nextBookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$.status", is(nextBookingDto.getStatus().toString()), Status.class))
@@ -120,7 +121,7 @@ class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER_USER_ID, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(nextBookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$.status", is(nextBookingDto.getStatus().toString()), Status.class))
@@ -139,7 +140,7 @@ class BookingControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER_USER_ID, 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(nextBookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$.status", is(nextBookingDto.getStatus().toString()), Status.class))
@@ -158,7 +159,7 @@ class BookingControllerTest {
                         .param("state", "ALL")
                         .param("from", String.valueOf(0))
                         .param("size", String.valueOf(10))
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER_USER_ID, 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(nextBookingDto, lastBookingDto))));
 
@@ -174,7 +175,7 @@ class BookingControllerTest {
                         .param("state", "ALL")
                         .param("from", String.valueOf(0))
                         .param("size", String.valueOf(10))
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER_USER_ID, 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(nextBookingDto, lastBookingDto))));
 

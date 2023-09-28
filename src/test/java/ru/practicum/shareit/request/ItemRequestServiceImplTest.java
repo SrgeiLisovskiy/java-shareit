@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -156,11 +155,4 @@ class ItemRequestServiceImplTest {
 
     }
 
-    @Test
-    void checkPageSize() {
-        assertThrows(ValidationException.class, () -> itemRequestService.checkPageSize(0, 0));
-        assertThrows(ValidationException.class, () -> itemRequestService.checkPageSize(-1, 0));
-        assertThrows(ValidationException.class, () -> itemRequestService.checkPageSize(0, -1));
-
-    }
 }

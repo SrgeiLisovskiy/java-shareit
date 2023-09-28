@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.util.List;
@@ -14,5 +13,4 @@ public interface ItemRequestService {
 
     List<ItemRequestDto> getRequests(Long userId, Integer from, Integer size);
 
-    PageRequest checkPageSize(Integer from, Integer size);
 }
