@@ -195,7 +195,6 @@ public class BookingServiceImplTest {
         assertThrows(NotFoundException.class, () -> bookingService.createBooking(anyLong(), bookingDto));
     }
 
-
     @Test
     @DisplayName("Проверка updateBooking в BookingServiceImpl")
     void updateBooking() {
@@ -247,6 +246,17 @@ public class BookingServiceImplTest {
         assertEquals(bookingDtoTest.getItem(), item);
         assertEquals(bookingDtoTest.getStatus(), lastBooking.getStatus());
         assertEquals(bookingDtoTest.getBooker(), user);
+    }
+
+    @Test
+    void getBookingErrorById() {
+        when(userService.getUserByID(anyLong())).thenReturn(UserMapper.toUserDto(user));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        when(bookingRepository.getById(anyLong())).thenReturn(lastBooking);
+
+
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingById(1L, 5L));
+
     }
 
     @Test
