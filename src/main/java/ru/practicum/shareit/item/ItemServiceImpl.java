@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -19,6 +20,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.utilite.CheckValidationService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -34,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final CheckValidationService checkValidation;
 
     @Override
     @Transactional
@@ -96,20 +99,21 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAllItem(Long userId) {
+    public List<ItemDto> getAllItem(Long userId, Integer from, Integer size) {
         log.info("Получен список всех вещей пользователя с ID = {}", userId);
-        return itemRepository.findByOwnerId(userId).stream()
+        return itemRepository.findByOwnerId(userId, PageRequest.of(from, size)).stream()
                 .map(item -> getItemByID(item.getId(), userId)).collect(Collectors.toList());
     }
 
 
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(String text, Integer from, Integer size) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
+        PageRequest pageRequest = checkValidation.checkPageSize(from, size);
         log.info("Получен список вещей подходящие под запрос поиска : {}", text);
-        return itemRepository.search(text).stream()
+        return itemRepository.search(text, pageRequest).stream()
                 .map(item -> ItemMapper.toItemDto(item)).collect(Collectors.toList());
     }
 
