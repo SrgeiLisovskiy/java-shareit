@@ -63,7 +63,7 @@ public class BookingController {
                                                                      @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                                      @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = BookingState.from(stateParam)
-                .orElseThrow(()-> new StateValidationException("Unknown state: " + stateParam));
+                .orElseThrow(() -> new StateValidationException("Unknown state: " + stateParam));
         log.info("Получен запрос на поиск всех бронирований всех товаров по ID пользователя");
         return bookingClient.getAllBookingsForAllItemsByOwnerId(userId, state, from, size);
     }

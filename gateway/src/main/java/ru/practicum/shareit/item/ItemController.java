@@ -28,37 +28,37 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@RequestHeader(HEADER_USER_ID) Long userId,
-                              @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
+                                             @PathVariable Long itemId, @RequestBody ItemDto itemDto) {
         log.debug("Получен запрос: PATCH /items/{itemId}");
         return itemClient.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemByID(@RequestHeader(HEADER_USER_ID) Long userId,
-                               @PathVariable Long itemId) {
+                                              @PathVariable Long itemId) {
         return itemClient.getItemByID(itemId, userId);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAllItems(@RequestHeader(HEADER_USER_ID) Long userId,
-                                     @RequestParam(name = "from" ,defaultValue = "0") Integer from,
-                                     @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                              @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                              @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.debug("Получен запрос: GET /items");
         return itemClient.getAllItems(userId, from, size);
     }
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchItems(@RequestParam String text,
-                                     @RequestParam(defaultValue = "0") Integer from,
-                                     @RequestParam(defaultValue = "10") Integer size) {
+                                              @RequestParam(defaultValue = "0") Integer from,
+                                              @RequestParam(defaultValue = "10") Integer size) {
         log.debug("Получен запрос: GET /items/search?text={text}");
         return itemClient.searchItems(text.toLowerCase(), from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@RequestHeader(HEADER_USER_ID) Long userId,
-                                 @PathVariable Long itemId,
-                                 @RequestBody @Validated CommentDto commentDto) {
+                                             @PathVariable Long itemId,
+                                             @RequestBody @Validated CommentDto commentDto) {
 
         log.debug("Получен запрос: POST /items/{itemId}/comment");
         return itemClient.addComment(userId, itemId, commentDto);
