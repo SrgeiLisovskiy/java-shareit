@@ -9,6 +9,8 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.utilite.Create;
 
+import java.util.Collections;
+
 import static ru.practicum.shareit.utilite.Constant.HEADER_USER_ID;
 
 @RestController
@@ -51,6 +53,9 @@ public class ItemController {
     public ResponseEntity<Object> searchItems(@RequestParam String text,
                                               @RequestParam(defaultValue = "0") Integer from,
                                               @RequestParam(defaultValue = "10") Integer size) {
+        if (text.isBlank()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         log.debug("Получен запрос: GET /items/search?text={text}");
         return itemClient.searchItems(text.toLowerCase(), from, size);
     }

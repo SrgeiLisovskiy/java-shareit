@@ -111,9 +111,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItems(String text, Integer from, Integer size) {
-        if (text.isEmpty()) {
-            return Collections.emptyList();
-        }
         PageRequest pageRequest = checkValidation.checkPageSize(from, size);
         log.info("Получен список вещей подходящие под запрос поиска : {}", text);
         return itemRepository.search(text, pageRequest).stream()
